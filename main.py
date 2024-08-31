@@ -501,21 +501,9 @@ def round1Check(id: str):
     return 404
 
 
-@app.get("/getround2/{id}/{teamName}")
-def getRound2(id: str, teamName: str):
-    result = (
-        service.spreadsheets()
-        .values()
-        .get(spreadsheetId=SHEET_ID, range="Round2")
-        .execute()
-    )
-    data = result["values"]
-
+@app.get("/getround2/")
+def getRound2():
     questionPresent = False
-    for i in data:
-        if i[0] == id:
-            questionPresent = True
-            return [i[2], i[3], i[4]]
 
     if not questionPresent:
         hardQuestions = [
@@ -544,16 +532,5 @@ def getRound2(id: str, teamName: str):
             mediumQuestionsSet1[random.randint(0, 4)],
             mediumQuestionsSet2[random.randint(0, 4)],
         ]
-        body = {"values": [[id, teamName, questions[0], questions[1], questions[2]]]}
-        result = (
-            service.spreadsheets()
-            .values()
-            .append(
-                spreadsheetId=SHEET_ID,
-                range="Round2",
-                valueInputOption="USER_ENTERED",
-                body=body,
-            )
-            .execute()
-        )
+
         return questions
